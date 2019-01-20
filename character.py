@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import argparse
-import struct
 import io
 import pprint
+import struct
+
 import msgpack
 
 AC_MAP = [
@@ -43,7 +44,7 @@ class KoikatuCharacter:
         self.list_info_data = data.read(self.list_info_size)
         self.list_info = msgpack.unpackb(self.list_info_data,
                                          encoding='utf8')
-        #print('listinfo:', self.list_info)
+        # print('listinfo:', self.list_info)
 
         # character info
         self.chara_datasize = struct.unpack("q", data.read(8))[0]
@@ -68,7 +69,7 @@ class KoikatuCharacter:
             else:
                 raise ValueError(f'Unsupported info {info["name"]}')
 
-        #print('name:', self.firstname, self.lastname)
+        # print('name:', self.firstname, self.lastname)
 
         self.additional_keys = []
         self.additional = {}
@@ -98,7 +99,7 @@ class KoikatuCharacter:
             self.unknown_mark = data.read(4)
 
             self.dearname = self._read_utf8_string(data)
-            #print('dear:', self.dearname)
+            # print('dear:', self.dearname)
 
             self.feeling = self._read_int(data)
             self.m_love = self._read_int(data)
@@ -116,7 +117,7 @@ class KoikatuCharacter:
                 self._date = 0
             else:
                 self._date = self._read_byte(data)
-                data.read(3) # not use
+                data.read(3)  # not use
                 self.strength = 0
 
             self.ero = self._read_int(data)
@@ -146,7 +147,6 @@ class KoikatuCharacter:
                 self.ac['anal_piston'] = b''
 
             self._read_additional(data)
-
 
     @property
     def firstname(self):
@@ -232,7 +232,6 @@ class KoikatuCharacter:
     def date(self, value):
         self._date = value
 
-
     @custom.setter
     def custom(self, value):
         self.face = value[0]
@@ -256,7 +255,6 @@ class KoikatuCharacter:
     def _unpack_short(self, bytes_):
         return struct.unpack('H', bytes_)
 
-
     def save(self, out):
         out.write(self._serialize())
 
@@ -267,10 +265,10 @@ class KoikatuCharacter:
         status_s = self._pack_status()
 
         info_data = {
-            'Custom' : custom_s,
-            'Coordinate' : coordinate_s,
-            'Parameter' : parameter_s,
-            'Status' : status_s,
+            'Custom': custom_s,
+            'Coordinate': coordinate_s,
+            'Parameter': parameter_s,
+            'Status': status_s,
         }
 
         if self.kkex is not None:
@@ -332,10 +330,8 @@ class KoikatuCharacter:
 
         return b''.join(data)
 
-
     def _pack_chardata(self):
         return self.chara_data
-
 
     def _read_custom(self, data):
         data_stream = io.BytesIO(data)
@@ -345,7 +341,6 @@ class KoikatuCharacter:
         self.body = msgpack.unpackb(data_stream.read(length), encoding='ascii')
         length = self._read_int(data_stream)
         self.hair = msgpack.unpackb(data_stream.read(length), encoding='ascii')
-
 
     def _pack_custom(self):
         face_s = msgpack.packb(self.face, use_single_float=True, use_bin_type=True)
@@ -361,7 +356,6 @@ class KoikatuCharacter:
         ]
         return b"".join(data)
 
-
     def _read_coordinate(self, data):
         self.coordinates = []
         for coordinate_data in msgpack.unpackb(data):
@@ -376,7 +370,6 @@ class KoikatuCharacter:
             length = self._read_int(data_stream)
             coordinate["makeup"] = msgpack.unpackb(data_stream.read(length), encoding='ascii')
             self.coordinates.append(coordinate)
-
 
     def _pack_coordinate(self):
         data = []
@@ -396,18 +389,14 @@ class KoikatuCharacter:
             data.append(b"".join(coordinate))
         return msgpack.packb(data, use_bin_type=True)
 
-
     def _read_parameter(self, data):
         self.parameter = msgpack.unpackb(data, encoding='utf8')
-
 
     def _pack_parameter(self):
         return msgpack.packb(self.parameter, use_single_float=True, use_bin_type=True)
 
-
     def _read_status(self, data):
         self.status = msgpack.unpackb(data, encoding='utf8')
-
 
     def _pack_status(self):
         return msgpack.packb(self.status, use_single_float=True, use_bin_type=True)
@@ -417,7 +406,6 @@ class KoikatuCharacter:
 
     def _pack_kkex(self):
         return msgpack.packb(self.kkex, use_single_float=True, use_bin_type=True)
-
 
     def _read_additional(self, data):
         chunk = data.read()
@@ -430,7 +418,7 @@ class KoikatuCharacter:
             return
 
         # -1 is length byte of 'Idle'
-        self.before_additional = chunk[0:start-1]
+        self.before_additional = chunk[0:start - 1]
 
         stream = io.BytesIO(chunk[start + len('Idle'):])
         value = self._read_int(stream)
@@ -452,7 +440,6 @@ class KoikatuCharacter:
         self.ac['houshi'] = stream.read(4)
         self.after_additional = stream.read()
 
-
     def _pack_additional(self):
         data = [self.before_additional]
 
@@ -465,37 +452,30 @@ class KoikatuCharacter:
         data.append(self.after_additional)
         return b''.join(data)
 
-
     def _read_utf8_string(self, data):
         len_ = self._read_byte(data)
         value = data.read(len_)
         return (value.decode('utf8'), len_)
-
 
     def _pack_utf8_string(self, string):
         len_ = self._pack_byte(string[1])
         binary = string[0].encode()
         return len_ + binary
 
-
     def _read_byte(self, data):
         return struct.unpack('b', data.read(1))[0]
-
 
     def _pack_byte(self, size):
         return struct.pack('b', size)
 
-
     def _read_int(self, data, endian='<'):
         return struct.unpack(endian + 'i', data.read(4))[0]
-
 
     def _pack_int(self, size, endian='<'):
         return struct.pack(endian + 'i', size)
 
-
     def _read_png(self, data):
-        signature = data.read(8) # PNG file signature
+        signature = data.read(8)  # PNG file signature
         assert signature == b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
 
         ihdr = data.read(25)
@@ -541,6 +521,5 @@ if __name__ == '__main__':
         chara = KoikatuCharacter(infile, True)
 
         pprint.pprint(chara.parameter)
-        #pprint.pprint(chara.status)
-        #pprint.pprint(chara.additional)
-
+        # pprint.pprint(chara.status)
+        # pprint.pprint(chara.additional)

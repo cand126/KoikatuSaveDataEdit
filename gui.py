@@ -4,21 +4,21 @@ import argparse
 import io
 import shutil
 import sys
-import traceback
-from pathlib import Path
-import winreg
-
 import tkinter as tk
 import tkinter.ttk as ttk
+import traceback
+import winreg
+from pathlib import Path
 from tkinter.filedialog import askopenfilename
 
 from PIL import Image, ImageTk
-from scframe import VerticalScrolledFrame
 
 from character import KoikatuCharacter
-from save_data import KoikatuSaveData
 from resource import Resource as RM
+from save_data import KoikatuSaveData
+from scframe import VerticalScrolledFrame
 from status import StatusPanel
+
 
 class PropertyPanel(ttk.Frame):
 
@@ -51,7 +51,7 @@ class PropertyPanel(ttk.Frame):
             label4 = ttk.Label(self, text=RM.res('sex'))
             self._sex = tk.StringVar(value=values[character.sex])
             entry4 = ttk.Combobox(self, values=values,
-                                textvariable=self._sex, state='readonly')
+                                  textvariable=self._sex, state='readonly')
             label4.grid(row=row, column=2, sticky="E", columnspan=1)
             entry4.grid(row=row, column=3, sticky="W", columnspan=1)
 
@@ -60,7 +60,7 @@ class PropertyPanel(ttk.Frame):
             label5 = ttk.Label(self, text=RM.res('personality'))
             self._personality = tk.StringVar(value=values[character.personality])
             entry5 = ttk.Combobox(self, values=values,
-                                textvariable=self._personality, state='readonly')
+                                  textvariable=self._personality, state='readonly')
             label5.grid(row=row, column=0, sticky="E", columnspan=1)
             entry5.grid(row=row, column=1, sticky="W", columnspan=1)
 
@@ -68,7 +68,7 @@ class PropertyPanel(ttk.Frame):
             label6 = ttk.Label(self, text=RM.res('weak_point'))
             self._weak_point = tk.StringVar(value=values[character.weak_point])
             entry6 = ttk.Combobox(self, values=values,
-                                textvariable=self._weak_point, state='readonly')
+                                  textvariable=self._weak_point, state='readonly')
             label6.grid(row=row, column=2, sticky="E", columnspan=1)
             entry6.grid(row=row, column=3, sticky="W", columnspan=1)
 
@@ -78,8 +78,8 @@ class PropertyPanel(ttk.Frame):
             frame = ttk.LabelFrame(self, text=RM.res('answer'))
             for i, name in enumerate(character.answers.keys()):
                 self._answers[name] = self._make_boolean_prop(frame,
-                                                            RM.res(name),
-                                                            character.answers[name], i, 5)
+                                                              RM.res(name),
+                                                              character.answers[name], i, 5)
             frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
             # denail
@@ -88,8 +88,8 @@ class PropertyPanel(ttk.Frame):
             frame = ttk.LabelFrame(self, text=RM.res('denial'))
             for i, name in enumerate(character.denials.keys()):
                 self._denials[name] = self._make_boolean_prop(frame,
-                                                            RM.res(name),
-                                                            character.denials[name], i, 5)
+                                                              RM.res(name),
+                                                              character.denials[name], i, 5)
             frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
             # attribute
@@ -98,8 +98,8 @@ class PropertyPanel(ttk.Frame):
             frame = ttk.LabelFrame(self, text=RM.res('attribute'))
             for i, name in enumerate(character.attributes.keys()):
                 self._attributes[name] = self._make_boolean_prop(frame,
-                                                                RM.res(name),
-                                                                character.attributes[name], i, 5)
+                                                                 RM.res(name),
+                                                                 character.attributes[name], i, 5)
             frame.grid(row=row, column=0, columnspan=4, sticky='W')
 
     @property
@@ -140,15 +140,15 @@ class PropertyPanel(ttk.Frame):
 
     @property
     def answers(self):
-        return {key:self._answers[key].get() for key in self._answers}
+        return {key: self._answers[key].get() for key in self._answers}
 
     @property
     def denials(self):
-        return {key:self._denials[key].get() for key in self._denials}
+        return {key: self._denials[key].get() for key in self._denials}
 
     @property
     def attributes(self):
-        return {key:self._attributes[key].get() for key in self._attributes}
+        return {key: self._attributes[key].get() for key in self._attributes}
 
     def update_character(self, character):
         self._firstname.set(character.firstname)
@@ -167,7 +167,6 @@ class PropertyPanel(ttk.Frame):
         for key in self._attributes:
             self._attributes[key].set(character.attributes[key])
 
-
     def _make_boolean_prop(self, frame, name, value, i, cols):
         var = tk.BooleanVar()
         checkbox = ttk.Checkbutton(frame, text=name, variable=var)
@@ -176,7 +175,6 @@ class PropertyPanel(ttk.Frame):
         col = i % cols
         checkbox.grid(row=row, column=col, sticky='W')
         return var
-
 
 
 class CharacterPanel(ttk.Frame):
@@ -206,12 +204,10 @@ class CharacterPanel(ttk.Frame):
         else:
             self.property_panel.grid(row=0, column=1, rowspan=1, columnspan=2, padx=2, pady=2, sticky='W')
 
-
         self._load_btn = ttk.Button(self,
                                     text='Load Character Card',
                                     command=self._open_dialog)
         self._load_btn.grid(row=2, column=1, sticky='W', pady=4)
-
 
     @property
     def character(self):
@@ -231,7 +227,7 @@ class CharacterPanel(ttk.Frame):
 
             panel = self.status_panel
             chara.feeling = panel.feeling
-            chara.m_love  = panel.m_love
+            chara.m_love = panel.m_love
             chara.h_count = panel.h_count
             chara.koikatu = panel.koikatu
             chara.lover = panel.relation
@@ -303,7 +299,7 @@ class App:
         y_padding = 4
         width = 1140
         height = 355 * 3 + btn_frame.winfo_height() + y_padding * 2
-        WindowsTaskbarHeight=48
+        WindowsTaskbarHeight = 48
         if self.root.winfo_screenheight() - WindowsTaskbarHeight < height:
             height = int(355 * 2.5) + btn_frame.winfo_height() + y_padding * 2
         self.root.geometry(f'{width}x{height}')
@@ -313,7 +309,6 @@ class App:
             frame.canvas.config(height=fh)
 
         self.root.bind('<Configure>', _configure)
-
 
     def save(self):
         for i, panel in enumerate(self.panels):
@@ -329,7 +324,6 @@ class App:
 
         self.save_data.save(self.out_filename)
 
-
     def save_and_quit(self, *args):
         self.save()
         self.root.destroy()
@@ -337,10 +331,8 @@ class App:
     def quit(self, *args):
         self.root.destroy()
 
-
     def run(self):
         self.root.mainloop()
-
 
 
 def main():
@@ -370,9 +362,9 @@ def main():
         resources = args.resources
     else:
         try:
-            save_folder=get_default_save_folder()
+            save_folder = get_default_save_folder()
         except:
-            save_folder=Path.cwd()
+            save_folder = Path.cwd()
         save_data = askopenfilename(filetype=[("koikatu save data", "*.dat")],
                                     initialdir=save_folder)
         print(save_data)
@@ -387,12 +379,13 @@ def main():
     print('out:', out_filename)
     App(root, save_data, out_filename).run()
 
+
 def get_default_save_folder():
     u"""get default save folder from windows registry """
     path = r'Software\illusion\Koikatu\koikatu'
     key = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, path)
     data, regtype = winreg.QueryValueEx(key, 'INSTALLDIR')
-    return data+'UserData\save\game'
+    return data + 'UserData\save\game'
 
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+
 # from https://gist.github.com/EugeneBakin/76c8f9bcec5b390e45df
 # http://tkinter.unpythonic.net/wiki/VerticalScrolledFrame
 
@@ -12,6 +13,7 @@ class VerticalScrolledFrame(ttk.Frame):
     * Construct and pack/place/grid normally
     * This frame only allows vertical scrolling
     """
+
     def __init__(self, parent, *args, **kw):
         tk.Frame.__init__(self, parent, *args, **kw)
 
@@ -49,6 +51,7 @@ class VerticalScrolledFrame(ttk.Frame):
             if interior.winfo_reqwidth() != canvas.winfo_width():
                 # update the inner frame's width to fill the canvas
                 canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+
         canvas.bind('<Configure>', _configure_canvas)
 
         # bind mouse wheel
@@ -73,6 +76,7 @@ if __name__ == "__main__":
             for i in range(10):
                 buttons.append(tk.Button(self.frame.interior, text="Button " + str(i)))
                 buttons[-1].pack()
+
 
     app = SampleApp()
     app.mainloop()

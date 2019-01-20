@@ -1,6 +1,7 @@
 import codecs
 import json
 
+
 class Resource:
     resource = {}
 

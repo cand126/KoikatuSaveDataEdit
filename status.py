@@ -1,8 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter.filedialog import askopenfilename
 
 from resource import Resource as RM
+
 
 class StatusPanel(ttk.Frame):
     def __init__(self, parent, chara, *args, **kwargs):
@@ -36,7 +36,7 @@ class StatusPanel(ttk.Frame):
         entry = ttk.Entry(self, textvariable=self._h_count)
         label.grid(row=row, column=2, sticky='E')
         entry.grid(row=row, column=3, sticky='W')
-        
+
         row = 2
         values = RM.res('koikatu')
         koikatu = self._get_value(values, chara.koikatu)
@@ -93,7 +93,6 @@ class StatusPanel(ttk.Frame):
         label.grid(row=row, column=2, sticky='E')
         cb.grid(row=row, column=3, sticky='W')
 
-
     def _make_ac(self, chara, name):
         values = RM.res('ac')
         label = ttk.Label(self, text=RM.res(name))
@@ -106,7 +105,6 @@ class StatusPanel(ttk.Frame):
 
     def _get_value(self, values, index):
         return values[index] if len(values) > index else values[0]
-
 
     @property
     def feeling(self):

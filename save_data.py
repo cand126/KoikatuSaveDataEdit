@@ -10,12 +10,12 @@ from character import KoikatuCharacter
 CHARA_HEADER = b'\x64\x00\x00\x00\x12\xe3\x80\x90KoiKatuChara\xe3\x80\x91'
 CHARA_SEPARATOR = b'\xff' * 8
 
+
 class KoikatuSaveData:
     def __init__(self, filename):
         self.filename = filename
         with open(filename, 'rb') as file:
             self._load(file)
-
 
     def _load(self, file):
         self.b_unknown01 = file.read(7)
@@ -34,24 +34,20 @@ class KoikatuSaveData:
                 chara = KoikatuCharacter(io.BytesIO(CHARA_HEADER + data), False, count == 0)
                 self.characters.append(chara)
                 count += 1
-                #print(f'chara: {chara.lastname} {chara.firstname} ({chara.nickname})')
-
+                # print(f'chara: {chara.lastname} {chara.firstname} ({chara.nickname})')
 
     def _read_utf8_string(self, file):
         len_ = struct.unpack('b', file.read(1))[0]
         value = file.read(len_)
         return (value.decode('utf8'), len_)
 
-
     def _pack_utf8_string(self, string):
         len_ = struct.pack('b', string[1])
         binary = string[0].encode()
         return len_ + binary
 
-
     def replace(self, pos, character):
         self.characters[pos] = character
-
 
     def save(self, filename):
         with open(filename, 'wb') as out:
@@ -95,7 +91,6 @@ if __name__ == '__main__':
         with open(outdir / f'char_{i:03}.additional2.dat', 'wb') as outfile:
             outfile.write(chara.after_additional)
 
-
     # confirm serializing
     save_data.save(args.save_data + '_01.dat')
 
@@ -114,6 +109,6 @@ if __name__ == '__main__':
     data = chara.before_additional
     chara.before_additional = b''.join([b'\x64', data[1:]])
 
-    #print('ac_mune:', chara.ac['mune'])
+    # print('ac_mune:', chara.ac['mune'])
 
     save_data.save(args.save_data + '_02.dat')
